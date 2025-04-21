@@ -9,8 +9,8 @@ import mime from 'mime-types'
  * @returns {string} - The detected MIME type or 'application/octet-stream' as fallback.
  */
 function getMimeType(filename: string): string {
-  const mimeType = mime.lookup(filename)
-  return mimeType || 'application/octet-stream'
+  const mimeType = mime.lookup(filename);
+  return mimeType || 'application/octet-stream';
 }
 
 /**
