@@ -2,6 +2,18 @@ import * as core from '@actions/core'
 import { create, uploadFileToBucket } from './supabase'
 import { getFilenames, readFile } from './files'
 
+import mime from 'mime-types';
+
+/**
+ * Detects the MIME type for a given file based on its name.
+ * @param {string} filename - The name of the file (e.g., 'file.exe').
+ * @returns {string} - The detected MIME type or 'application/octet-stream' as fallback.
+ */
+function getMimeType(filename: string): string {
+  const mimeType = mime.lookup(filename);
+  return mimeType || 'application/octet-stream';
+}
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -45,14 +57,16 @@ export async function run(): Promise<void> {
     for (const filename of filenames) {
       core.debug(`uploading: ${filename}`)
       const file = readFile(`${dir}/${filename}`)
-      const error = await uploadFileToBucket(client, bucket, filename, file)
+      const mimeType = getMimeType(filename); // Detect MIME type
+      core.debug(`detected MIME type: ${mimeType}`);
+      const error = await uploadFileToBucket(client, bucket, filename, file,mimeType);
       if (error) {
-        core.debug('an error has occurred')
-        core.debug(error.message)
-        core.setFailed(error.message)
-        return
+        core.debug('an error has occurred');
+        core.debug(error.message);
+        core.setFailed(error.message);
+        return;
       }
-      core.debug('file uploaded')
+      core.debug('file uploaded');
     }
 
     core.setOutput('message', 'Files uploaded successfully')
