@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 import { create, uploadFileToBucket } from './supabase'
 import { getFilenames, readFile } from './files'
-
 import mime from 'mime-types'
 
 /**
